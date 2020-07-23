@@ -43,4 +43,3 @@ func Test_Given_Dates_When_GetSleepTimes_Then_GetRightTime(t *testing.T) {
 	assert.Equal(t, date0, sleepTimes[0].Date)
 	assert.Equal(t, date1, sleepTimes[1].Date)
 }
-

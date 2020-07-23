@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/younghyunjo/time-stat/src/timesheet"
 	"net/http"
+	"server/pkg/timesheet"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // get : http://localhost:8080/v1.0/sleep?date=2020-06-18
