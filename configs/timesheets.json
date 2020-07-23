@@ -1,0 +1,6 @@
+{
+  "credentials": "configs/credentials.json",
+  "token": "configs/token.json",
+  "spreadsheet_id": "1oeiXojIzI4t8GzkoYRRvS7h4qV3si3GgbOM0pnLw2vo",
+  "sheet_name": "수면"
+}
