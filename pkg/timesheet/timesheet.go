@@ -18,6 +18,12 @@ type configsJson struct {
 	Sheet_name     string `json:"sheet_name"`
 }
 
+type sleepJson struct {
+	Date     string `json:"date"`
+	WakeTime string `json:"wakeTime"`
+	BedTime  string `json:"bedTime"`
+}
+
 type Sleep struct {
 	Date     time.Time
 	WakeTime time.Time
@@ -141,9 +147,24 @@ func GetSleepTimes(date []time.Time) []Sleep {
 	for _, date := range date {
 		if s, ok := sleepSheet[date]; ok {
 			sleepTimes = append(sleepTimes, s)
+		} else {
+			sleepTimes = append(sleepTimes, Sleep{Date: date})
 		}
 	}
 	sheetLock.RUnlock()
 
 	return sleepTimes
+}
+
+func SleepToJson(sleepTimes []Sleep, dateLayout string, timeLayout string) interface{} {
+	var sleepTimeJson []sleepJson
+	for _, s := range sleepTimes {
+		sleepTimeJson = append(sleepTimeJson, sleepJson{
+			Date:     s.Date.Format(dateLayout),
+			WakeTime: s.WakeTime.Format(timeLayout),
+			BedTime:  s.BedTime.Format(timeLayout),
+		})
+	}
+
+	return sleepTimeJson
 }
