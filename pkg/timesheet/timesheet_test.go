@@ -1,6 +1,7 @@
 package timesheet
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -44,6 +45,7 @@ func Test_Given_Dates_When_GetSleepTimes_Then_GetRightTime(t *testing.T) {
 	assert.Equal(t, date1, sleepTimes[1].Date)
 }
 
-func Test_Json(t *testing.T) {
-	SleepToJson()
+func Test_Given_Day_When_GetDailyHistogram_Then_GetRightTime(t *testing.T) {
+	sleepTimes := GetDailyHistogram(2)
+	fmt.Println(HistogramToJson(sleepTimes, "2006-01-02", "15:04"))
 }

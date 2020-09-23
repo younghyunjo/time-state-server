@@ -48,6 +48,14 @@ func getSleepTime(c *gin.Context) {
 	c.JSON(http.StatusOK, sleepTimesJson)
 }
 
+// GET /getHistogram
+func getHistogram(c *gin.Context) {
+	fmt.Println("getHistogram")
+	histogram := timesheet.GetDailyHistogram(8)
+	histogramJson := timesheet.HistogramToJson(histogram, "2006-01-02", "15:04")
+	c.JSON(http.StatusOK, histogramJson)
+}
+
 func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
@@ -55,6 +63,7 @@ func main() {
 	{
 		v1.GET("/sleep", sleepGet)
 		v1.GET("/sleeptime", getSleepTime)
+		v1.GET("/dailyhistogram", getHistogram)
 	}
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

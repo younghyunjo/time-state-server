@@ -19,15 +19,25 @@ type configsJson struct {
 }
 
 type sleepJson struct {
-	Date     string `json:"date"`
-	WakeTime string `json:"wakeTime"`
-	BedTime  string `json:"bedTime"`
+	Date     string `json:"Date"`
+	WakeTime string `json:"WakeTime"`
+	BedTime  string `json:"BedTime"`
 }
 
 type Sleep struct {
 	Date     time.Time
 	WakeTime time.Time
 	BedTime  time.Time
+}
+
+type Histogram struct {
+	tag        string
+	sleepTimes []Sleep
+}
+
+type histogramJson struct {
+	Tag        string  `json:"tag"`
+	SleepTimes []Sleep `json:"sleepTimes"`
 }
 
 /*
@@ -144,16 +154,55 @@ func GetSleepTimes(date []time.Time) []Sleep {
 	var sleepTimes []Sleep
 
 	sheetLock.RLock()
-	for _, date := range date {
-		if s, ok := sleepSheet[date]; ok {
+	for _, d := range date {
+		d = time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC)
+		if s, ok := sleepSheet[d]; ok {
 			sleepTimes = append(sleepTimes, s)
 		} else {
-			sleepTimes = append(sleepTimes, Sleep{Date: date})
+			sleepTimes = append(sleepTimes, Sleep{Date: d})
 		}
 	}
 	sheetLock.RUnlock()
 
 	return sleepTimes
+}
+
+func GetOneDayHistogram(day time.Weekday, nrHistory int) []Sleep {
+	now := time.Now()
+	dayDiff := int(day) - int(now.Weekday())
+	if dayDiff > 0 {
+		dayDiff -= 7
+	}
+	lastestTargetWeekday := now.AddDate(0, 0, dayDiff)
+
+	var date []time.Time
+	for i := 0; i < nrHistory; i++ {
+		date = append(date, lastestTargetWeekday.AddDate(0, 0, i*7*-1))
+	}
+	return GetSleepTimes(date)
+}
+
+func GetDailyHistogram(nrHistory int) []Histogram {
+	var histogram []Histogram
+	for i := 0; i < 7; i++ {
+		var h Histogram
+		h.tag = time.Weekday.String(time.Weekday(i))
+		h.sleepTimes = GetOneDayHistogram(time.Weekday(i), nrHistory)
+		histogram = append(histogram, h)
+	}
+	return histogram
+}
+
+func HistogramToJson(histogram []Histogram, dateLayout string, timeLayout string) interface{} {
+	var json []histogramJson
+	for _, h := range histogram {
+		a := histogramJson{
+			h.tag,
+			h.sleepTimes,
+		}
+		json = append(json, a)
+	}
+	return json
 }
 
 func SleepToJson(sleepTimes []Sleep, dateLayout string, timeLayout string) interface{} {
